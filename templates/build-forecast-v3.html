@@ -46,14 +46,17 @@
     <link href="{{ url_for('static', filename='styles/app.css') }}" rel="stylesheet">
 
     <!-- Scripts -->
+    {#    <script src="https://cdn.plot.ly/plotly-2.4.2.min.js"></script>#}
+    <script src="{{ url_for('static', filename='js/plotly-2.4.2.min.js') }}"></script>
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"
             integrity="sha512-q/dWJ3kcmjBLU4Qc47E4A9kTB4m3wuTY7vkFJDTZKjTs8jhyGQnaUrxa0Ytd0ssMZhbNua9hE+E7Qv1j+DyZwA=="
             crossorigin="anonymous"></script>
+    {#    <script src="https://cdn.bootcdn.net/ajax/libs/socket.io/4.0.1/socket.io.min.js"></script>#}
     <script type="text/javascript" src="{{ url_for('static', filename='js/papaparse.js') }}"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.0.0-alpha1/jquery.min.js"></script>
     <script type="text/javascript" src="{{ url_for('static', filename='js/forecastr_v4.js') }}"></script>
-    <script type="text/javascript"
-            src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.3/Chart.bundle.min.js"></script>
+    {#    <script type="text/javascript"#}
+    {#            src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.3/Chart.bundle.min.js"></script>#}
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
     <script src="https://gitcdn.github.io/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js"></script>
 
@@ -61,10 +64,10 @@
 <body>
 
 <!-- Google Tag Manager (noscript) -->
-<noscript>
-    <iframe src="https://www.googletagmanager.com/ns.html?id=GTM-PP5GR6W"
-            height="0" width="0" style="display:none;visibility:hidden"></iframe>
-</noscript>
+{#<noscript>#}
+{#    <iframe src="https://www.googletagmanager.com/ns.html?id=GTM-PP5GR6W"#}
+{#            height="0" width="0" style="display:none;visibility:hidden"></iframe>#}
+{#</noscript>#}
 <!-- End Google Tag Manager (noscript) -->
 
 <div class='container'>
@@ -99,7 +102,6 @@
             <div class="tab-content">
 
                 <div id="step1" class="tab-pane fade in active">
-
                     <div class='main-content'>
 
                         <h3 class='step-title'>STEP 1: UPLOAD A CSV</h3><br/>
@@ -139,19 +141,37 @@
 
                         <table class='table'>
                             <thead>
-                            <th></th>
+                            <th>Upload</th>
+                            <th>Download</th>
                             <th>Dataset</th>
                             <th>Series Type</th>
                             </thead>
 
                             <tr>
-                                <td><a href="{{ url_for('static', filename='sampledata/shampoo_sales.csv') }}"><img
-                                        class='download-csv-icon'
-                                        src="{{ url_for('static', filename='img/download_arrow.png') }}"/></a></td>
+                                <td>
+                                    <button id="use-file0"
+                                            value="{{ url_for('static', filename='sampledata/shampoo_sales.csv') }}">
+                                        <img class='download-csv-icon'
+                                             src="{{ url_for('static', filename='img/step1_upload_csv.png') }}"/>
+                                    </button>
+                                </td>
+                                <td>
+                                    <a href="{{ url_for('static', filename='sampledata/shampoo_sales.csv') }}">
+                                        <img class='download-csv-icon'
+                                             src="{{ url_for('static', filename='img/download_arrow.png') }}"/>
+                                    </a>
+                                </td>
                                 <td>Shampoos Sales</td>
                                 <td>Monthly</td>
                             </tr>
                             <tr>
+                                <td>
+                                    <button id="use-file1"
+                                            value="{{ url_for('static', filename='sampledata/mean_temps.csv') }}">
+                                        <img class='download-csv-icon'
+                                             src="{{ url_for('static', filename='img/step1_upload_csv.png') }}"/>
+                                    </button>
+                                </td>
                                 <td><a href="{{ url_for('static', filename='sampledata/mean_temps.csv') }}"><img
                                         class='download-csv-icon'
                                         src="{{ url_for('static', filename='img/download_arrow.png') }}"/></a></td>
@@ -159,6 +179,13 @@
                                 <td>Daily</td>
                             </tr>
                             <tr>
+                                <td>
+                                    <button id="use-file2"
+                                            value="{{ url_for('static', filename='sampledata/example_wp_log_peyton_manning_v2.csv') }}">
+                                        <img class='download-csv-icon'
+                                             src="{{ url_for('static', filename='img/step1_upload_csv.png') }}"/>
+                                    </button>
+                                </td>
                                 <td>
                                     <a href="{{ url_for('static', filename='sampledata/example_wp_log_peyton_manning_v2.csv') }}"><img
                                             class='download-csv-icon'
@@ -201,18 +228,30 @@
                         <h5 id='original-data-chart-title' class='sub-header'>INSERT TITLE</h5>
                         <div id='build-basic-forecast'>
 
-                            <canvas id="originalChart"></canvas>
+                            <div id="originalChart"></div>
+                            {#                            <canvas id="originalChart"></canvas>#}
                             <h5>SUMMARY STATISTICS ABOUT YOUR DATA</h5><br/>
 
                             <ol class='helpful-stats'>
-                                <li class='helpful-title mean'>Mean<br><span id='metrics-mean'
-                                                                             class='summary-data'>--</span></li>
-                                <li class='helpful-title std'>Std<br><span id='metrics-std'
-                                                                           class='summary-data'>--</span></li>
-                                <li class='helpful-title min'>Min<br><span id='metrics-min'
-                                                                           class='summary-data'>--</span></li>
-                                <li class='helpful-title max'>Max<br><span id='metrics-max'
-                                                                           class='summary-data'>--</span></li>
+                                <li class='helpful-title name'>Name<br>
+                                    <span class="summary-data" id="'metrics-name">Y</span>
+                                </li>
+                                <li class='helpful-title mean'>Mean<br>
+                                    <span id='metrics-mean'
+                                          class='summary-data'>--</span>
+                                </li>
+                                <li class='helpful-title std'>Std<br>
+                                    <span id='metrics-std'
+                                          class='summary-data'>--</span>
+                                </li>
+                                <li class='helpful-title min'>Min<br>
+                                    <span id='metrics-min'
+                                          class='summary-data'>--</span>
+                                </li>
+                                <li class='helpful-title max'>Max<br>
+                                    <span id='metrics-max'
+                                          class='summary-data'>--</span>
+                                </li>
                             </ol>
 
                         </div>
@@ -226,14 +265,14 @@
                         <div id='forecast-out'>
                             <h5 class='sub-header'><b>Forecast Length</b></h5>
                             <p>How many <span id='timeframe'>days</span> do you want to forecast out?</p>
-                            <input id="days-to-forecast" type="number"><br><br>
+                            <input id="days-to-forecast" type="number" value="60"><br><br>
                         </div>
 
                         <div id='forecast-model-type'>
 
                             <h5 class='sub-header'>Forecast Model</h5>
                             <p>What type of forecasting model would you like to use?</p>
-                            <input class='option' type="radio" name="selection" value="linear"> Linear<br>
+                            <input class='option' type="radio" name="selection" value="linear" checked> Linear<br>
                             <input class='option' type="radio" name="selection" value="logistic"> Logistic<br><br>
 
 
@@ -245,6 +284,8 @@
 
                         </div>
 
+                        <button id="tuning-params">TUNING PARAMS</button>
+                        <br><br>
                         <button id="generate-forecast">GENERATE FORECAST</button>
 
                     </div>
@@ -270,14 +311,15 @@
                                 Your forecast is being built. Larger datasets may experience wait times of up to 1
                                 minute in the Alpha Version of this site.
                             </p>
-                            <canvas id="myChart"></canvas>
+                            {#                            <canvas id="myChart"></canvas>#}
+                            <div id="myChart"></div>
 
                             <!-- Previous vs Future Dropdown Stats -->
 
                             <h5>PREVIOUS VS. FUTURE FORECAST STATISTICS</h5><br/>
                             <select class="form-control arguments" id="summary-stats">
                                 <option value="" selected disabled>COMPARISON METRIC</option>
-                                <option value="sum" active>Sum</option>
+                                <option value="sum" selected>Sum</option>
                                 <option value="average">Average</option>
                             </select>
 
@@ -303,11 +345,13 @@
                                         id='metrics-actualssum_mean' class='summary-data'>--</span></li>
                                 <li class='helpful-title sum'>Next Forecasted <span
                                         id="forecast-length-comp-avg-percent"></span> <span
-                                        id="timeframe-comp-avg-percent"></span><br><span id='metrics-forecastsum_mean'
-                                                                                         class='summary-data'>--</span>
+                                        id="timeframe-comp-avg-percent"></span><br><span
+                                        id='metrics-forecastsum_mean'
+                                        class='summary-data'>--</span>
                                 </li>
-                                <li class='helpful-title difference'>Forecast vs. Past <br><span id='metrics-diff_mean'
-                                                                                                 class='summary-data'>--</span>
+                                <li class='helpful-title difference'>Forecast vs. Past <br><span
+                                        id='metrics-diff_mean'
+                                        class='summary-data'>--</span>
                                 </li>
                             </ol>
                         </div>
@@ -361,13 +405,15 @@
                             <li class='arguments seasonality-check-options'>
                                 <span class='argument-name'>SEASONALITY TYPE:</span><br>
                                 <input type="checkbox" name="seasonality_type" value="daily_seasonality"> DAILY<br>
-                                <input type="checkbox" name="seasonality_type" value="weekly_seasonality"> WEEKLY<br>
-                                <input type="checkbox" name="seasonality_type" value="yearly_seasonality"> YEARLY<br>
+                                <input type="checkbox" name="seasonality_type" value="weekly_seasonality">
+                                WEEKLY<br>
+                                <input type="checkbox" name="seasonality_type" value="yearly_seasonality">
+                                YEARLY<br>
 
                             </li>
                             <li class='arguments'>
                                 <span class='argument-name'>SEASONALITY PRIOR SCALE</span><br>
-                                <input class='num-field' id="seasonality-prior-scale" type="number">
+                                <input class='num-field' id="seasonality-prior-scale" type="number" value="10.0">
                             </li>
                         </div>
 
@@ -376,11 +422,11 @@
                             <li class='param-header'>CHANGEPOINTS (?)</li>
                             <li class='arguments'>
                                 <span class='argument-name'># OF CHANGEPOINTS</span><br>
-                                <input class='num-field' id="n-changepoints" type="number">
+                                <input class='num-field' id="n-changepoints" type="number" value="25" min="0" step="1">
                             </li>
                             <li class='arguments'>
                                 <span class='argument-name'>CHANGEPOINT PRIOR SCALE</span><br>
-                                <input class='num-field' id="changepoints-prior-scale" type="number">
+                                <input class='num-field' id="changepoints-prior-scale" type="number" value="0.05">
                             </li>
 
                         </div>

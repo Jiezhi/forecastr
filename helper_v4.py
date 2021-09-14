@@ -90,7 +90,7 @@ def forecastr(data, forecast_settings, column_headers, freq_val, build_settings)
                   fs_daily_seasonality,
                   fs_weekly_seasonality,
                   fs_yearly_seasonality,
-                  fs_n_changepoints,
+                  fs_n_changepoints if fs_n_changepoints == 'auto' else int(fs_n_changepoints),
                   fs_changepoints_prior_scale]
 
     # Needs to be a dictionary
@@ -104,10 +104,10 @@ def forecastr(data, forecast_settings, column_headers, freq_val, build_settings)
     prophet_arg_vals = {}
 
     for key, value in model_arg_vals.items():
-        if (value == "") or (value == False) or (value == 0) or (value == 'auto'):
-            print('skipping this key value pair')
-        else:
+        if value != "" and value != False and value != 0 and value != 'auto':
             prophet_arg_vals[key] = value
+        else:
+            print(f'skipping {key}: {value}')
 
     ##### TIME TO INSTANTIATE, FIT AND PREDICT WITH FACEBOOK PROPHET ######
 
@@ -141,6 +141,8 @@ def forecastr(data, forecast_settings, column_headers, freq_val, build_settings)
     ##### Send y_hat and dates to a list, so that they can be graphed easily when set in ChartJS
 
     y_hat = forecast['yhat'].tolist()
+    yhat_lower = forecast['yhat_lower'].tolist()
+    yhat_upper = forecast['yhat_upper'].tolist()
     dates = forecast['ds'].apply(lambda x: str(x).split(' ')[0]).tolist()
 
     ##### Lets see how the forecast compares to historical performance #####
@@ -201,7 +203,7 @@ def forecastr(data, forecast_settings, column_headers, freq_val, build_settings)
     print(forecasted_vals)
     print(forecasted_vals_mean)
 
-    return [y_hat, dates, m, csv_ready_for_export, forecasted_vals, forecasted_vals_mean]
+    return [y_hat, dates, m, csv_ready_for_export, forecasted_vals, forecasted_vals_mean, yhat_lower, yhat_upper]
 
 
 def validate_model(model, dates):
@@ -422,11 +424,11 @@ def determine_timeframe(data, time_unit):
         time = 'days'
         freq = 'D'
         desc = 'daily'
-    elif time_delta >= 7 and time_delta <= 27:
+    elif 7 <= time_delta <= 27:
         time = 'weeks'
         freq = 'W'
         desc = 'weekly'
-    elif time_delta >= 28 and time_delta <= 31:
+    elif 28 <= time_delta <= 31:
         time = 'months'
         freq = 'M'
         desc = 'monthly'

@@ -227,6 +227,23 @@
         }
 
 
+          #tuning-params {
+
+            background-color:  #61bb46;
+            color: #FFF;
+            padding: 10px;
+            padding-left: 10px;
+            padding-right: 10px;
+            font-size:12px;
+            border-radius: 5px;
+            border:none;
+            list-style: none;
+            position:relative;
+            top:-45px;
+            width:100%;
+
+
+        }
         #generate-forecast {
 
             background-color:  #61bb46;
@@ -812,13 +829,13 @@
 
             height:350px;
             width:100%;
-            padding-right: 31px;
+            /*padding-right: 31px;*/
             background-color: #FFF;
             border: 1px solid #ddd;
-            padding-left: 20px;
-            padding-top: 15px;
-            margin-top: 40px;
-            margin-bottom: 40px;
+            /*padding-left: 20px;*/
+            /*padding-top: 15px;*/
+            /*margin-top: 40px;*/
+            /*margin-bottom: 40px;*/
 
         }
 
